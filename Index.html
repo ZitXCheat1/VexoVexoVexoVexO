@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Enhanced License Manager Pro</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .header h1 {
+            color: #667eea;
+            margin: 0;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .section h2 {
+            margin-top: 0;
+            color: #667eea;
+            font-size: 1.5em;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        input, select, button {
+            padding: 10px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .toggle-btn {
+            background: #6c757d;
+        }
+
+        .toggle-btn.active {
+            background: linear-gradient(135deg, #28a745, #20c997);
+        }
+
+        .copy-btn {
+            padding: 5px 8px;
+            font-size: 12px;
+            min-width: auto;
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, #ffc107, #e0a800);
+            color: #212529;
+        }
+
+        #userList, #keyList, #appList {
+            list-style: none;
+            padding: 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        #userList li, #keyList li, #appList li {
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .active-user {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            border-left: 4px solid #28a745;
+        }
+
+        .expired-user {
+            background: linear-gradient(135deg, #f8d7da, #f1c2c7);
+            border-left: 4px solid #dc3545;
+        }
+
+        .trial-user {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border-left: 4px solid #ffc107;
+        }
+
+        .used-key {
+            background: linear-gradient(135deg, #d1ecf1, #bee5eb);
+            border-left: 4px solid #17a2b8;
+        }
+
+        .unused-key {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            border-left: 4px solid #28a745;
+        }
+
+        .app-item {
+            background: linear-gradient(135deg, #e2e3e5, #d1d7dc);
+            border-left: 4px solid #6c757d;
+        }
+
+        .user-info, .key-info, .app-info {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .user-type, .key-type, .app-status {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .user-type.premium, .key-type.premium {
+            background: #667eea;
+            color: white;
+        }
+
+        .user-type.free_trial, .key-type.trial {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .app-status.active {
+            background: #28a745;
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-label {
+            display: block;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            display: block;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .stat-value.active { color: #28a745; }
+        .stat-value.expired { color: #dc3545; }
+        .stat-value.trial { color: #ffc107; }
+        .stat-value.lifetime { color: #6f42c1; }
+        .stat-value.total { color: #667eea; }
+        .stat-value.keys { color: #17a2b8; }
+
+        #upgradeMessages {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 400px;
+        }
+
+        .upgrade-message {
+            margin-bottom: 10px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideIn 0.3s ease;
+        }
+
+        .upgrade-message.success {
+            background: linear-gradient(135deg, #28a745, #20c997);
+        }
+
+        .upgrade-message.error {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+        }
+
+        .upgrade-message.warning {
+            background: linear-gradient(135deg, #ffc107, #e0a800);
+            color: #212529;
+        }
+
+        .upgrade-message.info {
+            background: linear-gradient(135deg, #17a2b8, #138496);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: inherit;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 0;
+            margin-left: 10px;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        #loading, #keyLoading, #appLoading {
+            text-align: center;
+            padding: 20px;
+            font-size: 16px;
+            color: #667eea;
+        }
+
+        .password-field, .hwid-field, .key-field, .secret-field {
+            font-family: monospace;
+            background: rgba(0, 0, 0, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        #customDaysContainer {
+            display: none;
+        }
+
+        .tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 0;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .form-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="upgradeMessages"></div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Enhanced License Manager Pro</h1>
+        </div>
+
+        <div class="section">
+            <h2>📊 Dashboard Statistics</h2>
+            <div id="dashboardStats"></div>
+        </div>
+
+        <div class="section">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('apps')">📱 Applications</button>
+                <button class="tab" onclick="switchTab('users')">👥 Users</button>
+                <button class="tab" onclick="switchTab('keys')">🔑 License Keys</button>
+            </div>
+
+            <div id="appsTab" class="tab-content active">
+                <h2>➕ Register New Application</h2>
+                <div class="form-group">
+                    <input type="text" id="appName" placeholder="Application Name">
+                    <input type="text" id="appOwnerId" placeholder="Owner ID">
+                    <button onclick="registerApplication()">Register Application</button>
+                </div>
+
+                <h2>📱 Application Management</h2>
+                <div class="form-group">
+                    <button id="toggleSecrets" onclick="toggleSecretVisibility()" class="toggle-btn">👁️ Show Secrets</button>
+                    <button onclick="loadApplications()">🔄 Refresh Applications</button>
+                </div>
+                
+                <div id="appLoading" style="display: none;">
+                    <strong>⏳ Loading applications...</strong>
+                </div>
+                
+                <ul id="appList"></ul>
+            </div>
+
+            <div id="usersTab" class="tab-content">
+                <h2>➕ Add New User</h2>
+                <div class="form-group">
+                    <select id="appSelectUsers"></select>
+                    <input type="text" id="username" placeholder="Username">
+                    <input type="text" id="password" placeholder="Password">
+                    <input type="text" id="licenseKey" placeholder="License Key">
+                    <label>
+                        <input type="checkbox" id="bindHWID"> Bind HWID
+                    </label>
+                    <button onclick="addUser()">Add User</button>
+                </div>
+
+                <h2>🗑️ Delete User</h2>
+                <div class="form-group">
+                    <select id="appSelectDeleteUser"></select>
+                    <input type="text" id="deleteUsername" placeholder="Username to Delete">
+                    <button onclick="deleteUser()">Delete User</button>
+                </div>
+
+                <h2>👥 User Management</h2>
+                <div class="form-group">
+                    <select id="appSelectUserList"></select>
+                    <button id="togglePasswords" onclick="togglePasswordVisibility()" class="toggle-btn">👁️ Show Passwords</button>
+                    <button id="toggleHWIDs" onclick="toggleHWIDVisibility()" class="toggle-btn">👁️ Show HWIDs</button>
+                    <button onclick="loadUsers()">🔄 Refresh Users</button>
+                    <button onclick="testConnection()">🔗 Test Connection</button>
+                </div>
+                
+                <div id="loading" style="display: none;">
+                    <strong>⏳ Loading users...</strong>
+                </div>
+                
+                <ul id="userList"></ul>
+            </div>
+
+            <div id="keysTab" class="tab-content">
+                <h2>🔑 Generate License Keys</h2>
+                <div class="form-group">
+                    <select id="appSelectKeys"></select>
+                    <select id="keyLicenseType" onchange="toggleKeyCustomDays()">
+                        <option value="1d">1 Day</option>
+                        <option value="7d">7 Days</option>
+                        <option value="30d">30 Days</option>
+                        <option value="90d">90 Days</option>
+                        <option value="365d">1 Year</option>
+                        <option value="lifetime">Lifetime</option>
+                        <option value="custom">Custom Days</option>
+                    </select>
+                    <div id="keyCustomDaysContainer" style="display: none;">
+                        <input type="number" id="keyCustomDays" placeholder="Custom Days" min="1">
+                    </div>
+                    <input type="number" id="keyCount" placeholder="Number of Keys" value="1" min="1" max="100">
+                    <button onclick="generateKeys()" class="generate-btn">Generate Keys</button>
+                </div>
+
+                <h2>🗑️ Delete License Key</h2>
+                <div class="form-group">
+                    <select id="appSelectDeleteKey"></select>
+                    <input type="text" id="deleteKeyInput" placeholder="License Key to Delete">
+                    <button onclick="deleteKey()">Delete Key</button>
+                </div>
+
+                <h2>🔑 License Key Management</h2>
+                <div class="form-group">
+                    <select id="appSelectKeyList"></select>
+                    <button onclick="loadKeys()">🔄 Refresh Keys</button>
+                    <button onclick="cleanUsedKeys()">🧹 Clean Used Keys</button>
+                </div>
+                
+                <div id="keyLoading" style="display: none;">
+                    <strong>⏳ Loading keys...</strong>
+                </div>
+                
+                <ul id="keyList"></ul>
+            </div>
+        </div>
+    </div>
+    
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js';
+        import { getDatabase, ref, set, remove, onValue, update } from 'https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js';
+
+        const firebaseConfig = {
+            databaseURL: "https://keyx-43ed5-default-rtdb.firebaseio.com/"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Security configurations
+        const MAX_SECRET_ATTEMPTS = 3;
+        const SECRET_LOCKOUT_TIME = 30 * 60 * 1000; // 30 minutes
+        let secretAttempts = 0;
+        let lastFailedAttempt = 0;
+
+        // Global variables to track visibility state
+        let passwordsVisible = false;
+        let hwidsVisible = false;
+        let secretsVisible = false;
+        let currentAppId = null;
+
+        // Generate random string for secrets
+        function generateRandomString(length) {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        // Anti-skip protection
+        window.validateAccess = function() {
+            const now = Date.now();
+            if (secretAttempts >= MAX_SECRET_ATTEMPTS && (now - lastFailedAttempt) < SECRET_LOCKOUT_TIME) {
+                const remainingTime = Math.ceil((SECRET_LOCKOUT_TIME - (now - lastFailedAttempt)) / 60000);
+                alert(`Too many failed attempts. Try again in ${remainingTime} minutes.`);
+                return false;
+            }
+            return true;
+        };
+
+        // Check license expiration
+        window.checkExpiration = function(expiryDate) {
+            if (expiryDate === 'lifetime') return false;
+            const today = new Date().toISOString().split('T')[0];
+            return new Date(expiryDate) < new Date(today);
+        };
+
+        // Calculate days until expiration
+        window.getDaysUntilExpiry = function(expiryDate) {
+            if (expiryDate === 'lifetime') return '∞';
+            const today = new Date();
+            const expiry = new Date(expiryDate);
+            const diffTime = expiry - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays > 0 ? diffDays : 0;
+        };
+
+        // Generate random key
+        function generateLicenseKey() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let key = '';
+            for (let i = 0; i < 20; i++) {
+                if (i > 0 && i % 4 === 0) key += '-';
+                key += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return key;
+        }
+
+        // Generate random password
+        function generateRandomPassword() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let password = '';
+            for (let i = 0; i < 8; i++) {
+                password += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return password;
+        }
+
+        // Tab switching
+        window.switchTab = function(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            if (tabName === 'apps') {
+                document.getElementById('appsTab').classList.add('active');
+                document.querySelector('.tab:first-child').classList.add('active');
+                loadApplications();
+            } else if (tabName === 'users') {
+                document.getElementById('usersTab').classList.add('active');
+                document.querySelector('.tab:nth-child(2)').classList.add('active');
+                loadApplicationsForSelect('appSelectUsers');
+                loadApplicationsForSelect('appSelectDeleteUser');
+                loadApplicationsForSelect('appSelectUserList');
+                loadUsers();
+            } else if (tabName === 'keys') {
+                document.getElementById('keysTab').classList.add('active');
+                document.querySelector('.tab:last-child').classList.add('active');
+                loadApplicationsForSelect('appSelectKeys');
+                loadApplicationsForSelect('appSelectDeleteKey');
+                loadApplicationsForSelect('appSelectKeyList');
+                loadKeys();
+            }
+        };
+
+        // Load applications for select dropdown
+        function loadApplicationsForSelect(selectId) {
+            const select = document.getElementById(selectId);
+            select.innerHTML = '<option value="">Select Application</option>';
+            
+            onValue(ref(db, 'applications'), (snapshot) => {
+                if (snapshot.exists()) {
+                    const apps = snapshot.val();
+                    Object.entries(apps).forEach(([appId, appData]) => {
+                        const option = document.createElement('option');
+                        option.value = appId;
+                        option.textContent = appData.name;
+                        select.appendChild(option);
+                    });
+                }
+            }, { onlyOnce: true });
+        }
+
+        // Register new application
+        window.registerApplication = function() {
+            const appName = document.getElementById('appName').value.trim();
+            const ownerId = document.getElementById('appOwnerId').value.trim();
+            
+            if (!appName || !ownerId) {
+                alert('Please enter Application Name and Owner ID');
+                return;
+            }
+            
+            const appId = generateRandomString(16).toLowerCase();
+            const appSecret = generateRandomString(32);
+            const createdAt = new Date().toISOString();
+            
+            const appData = {
+                name: appName,
+                ownerId: ownerId,
+                secret: appSecret,
+                createdAt: createdAt,
+                status: "active"
+            };
+            
+            set(ref(db, 'applications/' + appId), appData)
+                .then(() => {
+                    const message = `Application registered successfully!\n\n` +
+                                   `Application ID: ${appId}\n` +
+                                   `Secret Key: ${appSecret}\n\n` +
+                                   `IMPORTANT: Save this secret key as it won't be shown again!`;
+                    alert(message);
+                    
+                    // Clear form
+                    document.getElementById('appName').value = '';
+                    document.getElementById('appOwnerId').value = '';
+                    
+                    loadApplications();
+                    updateDashboardStats();
+                })
+                .catch((error) => {
+                    console.error('Error registering application:', error);
+                    alert('Error registering application: ' + error.message);
+                });
+        };
+
+        // Toggle secret visibility
+        window.toggleSecretVisibility = function() {
+            secretsVisible = !secretsVisible;
+            const toggleBtn = document.getElementById('toggleSecrets');
+            
+            if (secretsVisible) {
+                toggleBtn.textContent = '🙈 Hide Secrets';
+                toggleBtn.classList.add('active');
+            } else {
+                toggleBtn.textContent = '👁️ Show Secrets';
+                toggleBtn.classList.remove('active');
+            }
+            
+            loadApplications();
+        };
+
+        // Load applications
+        window.loadApplications = function() {
+            const list = document.getElementById('appList');
+            const loadingDiv = document.getElementById('appLoading');
+            
+            list.innerHTML = '';
+            loadingDiv.style.display = 'block';
+
+            onValue(ref(db, 'applications'), (snapshot) => {
+                list.innerHTML = '';
+                loadingDiv.style.display = 'none';
+                
+                if (snapshot.exists()) {
+                    const apps = snapshot.val();
+                    
+                    Object.entries(apps).forEach(([appId, appData]) => {
+                        const li = document.createElement('li');
+                        li.className = 'app-item';
+                        
+                        const displaySecret = secretsVisible ? appData.secret : '********';
+                        
+                        const escapedAppId = encodeURIComponent(appId);
+                        const escapedSecret = encodeURIComponent(appData.secret);
+                        
+                        const appIdCopyBtn = `<button class="copy-btn" onclick="copyToClipboard(decodeURIComponent('${escapedAppId}'), 'App ID')" title="Copy App ID">📋</button>`;
+                        const secretCopyBtn = secretsVisible ? `<button class="copy-btn" onclick="copyToClipboard(decodeURIComponent('${escapedSecret}'), 'Secret')" title="Copy Secret">📋</button>` : '';
+                        
+                        li.innerHTML = `
+                            <div class="app-info">
+                                <strong>📱 ${appData.name}</strong> ${appIdCopyBtn}
+                                <span class="app-status active">ACTIVE</span>
+                                <br>
+                                🆔 App ID: <span class="key-field">${appId}</span>
+                                <br>
+                                🔑 Secret: <span class="secret-field">${displaySecret}</span> ${secretCopyBtn}
+                                <br>
+                                👤 Owner ID: ${appData.ownerId}
+                                <br>
+                                📅 Created: ${new Date(appData.createdAt).toLocaleDateString()}
+                            </div>
+                        `;
+                        list.appendChild(li);
+                    });
+                } else {
+                    list.innerHTML = '<li>No applications found</li>';
+                }
+            }, (error) => {
+                console.error('Error loading applications:', error);
+                loadingDiv.style.display = 'none';
+                list.innerHTML = '<li style="color: red;">Error loading applications: ' + error.message + '</li>';
+                showMessage('Error loading applications: ' + error.message, 'error');
+            });
+        };
+
+        // Generate license keys
+        window.generateKeys = function() {
+            const appId = document.getElementById('appSelectKeys').value;
+            if (!appId) {
+                alert('Please select an application');
+                return;
+            }
+            
+            const type = document.getElementById('keyLicenseType').value;
+            const customDays = parseInt(document.getElementById('keyCustomDays').value);
+            const count = parseInt(document.getElementById('keyCount').value) || 1;
+
+            if (count > 100) {
+                alert('Maximum 100 keys can be generated at once');
+                return;
+            }
+
+            let expires;
+            if (type === "custom" && customDays > 0) {
+                const customDate = new Date();
+                customDate.setDate(customDate.getDate() + customDays);
+                expires = customDate.toISOString().split('T')[0];
+            } else if (type === "1d") {
+                const date = new Date();
+                date.setDate(date.getDate() + 1);
+                expires = date.toISOString().split('T')[0];
+            } else if (type === "7d") {
+                const date = new Date();
+                date.setDate(date.getDate() + 7);
+                expires = date.toISOString().split('T')[0];
+            } else if (type === "30d") {
+                const date = new Date();
+                date.setDate(date.getDate() + 30);
+                expires = date.toISOString().split('T')[0];
+            } else if (type === "90d") {
+                const date = new Date();
+                date.setDate(date.getDate() + 90);
+                expires = date.toISOString().split('T')[0];
+            } else if (type === "365d") {
+                const date = new Date();
+                date.setDate(date.getDate() + 365);
+                expires = date.toISOString().split('T')[0];
+            } else {
+                expires = "lifetime";
+            }
+
+            let generatedKeys = [];
+            let promises = [];
+
+            for (let i = 0; i < count; i++) {
+                const licenseKey = generateLicenseKey();
+                generatedKeys.push(licenseKey);
+
+                const keyData = {
+                    expires: expires,
+                    used: false,
+                    createdAt: new Date().toISOString(),
+                    type: type,
+                    status: "unused",
+                    appId: appId
+                };
+
+                promises.push(set(ref(db, 'license_keys/' + licenseKey), keyData));
+            }
+
+            Promise.all(promises)
+                .then(() => {
+                    const keysText = generatedKeys.join('\n');
+                    alert(`${count} license keys generated successfully for app ${appId}!\n\n${keysText}`);
+                    
+                    // Clear form
+                    document.getElementById('keyCount').value = '1';
+                    document.getElementById('keyCustomDays').value = '';
+                    loadKeys();
+                    updateDashboardStats();
+                })
+                .catch((error) => {
+                    console.error('Error generating keys:', error);
+                    alert('Error generating keys: ' + error.message);
+                });
+        };
+
+        // Delete license key
+        window.deleteKey = function() {
+            const appId = document.getElementById('appSelectDeleteKey').value;
+            if (!appId) {
+                alert('Please select an application');
+                return;
+            }
+            
+            const key = document.getElementById('deleteKeyInput').value.trim();
+            if (!key) {
+                alert('Please enter license key to delete');
+                return;
+            }
+
+            if (confirm('Are you sure you want to delete this license key: ' + key + '?')) {
+                remove(ref(db, 'license_keys/' + key))
+                    .then(() => {
+                        alert('License key deleted successfully!');
+                        document.getElementById('deleteKeyInput').value = '';
+                        loadKeys();
+                        updateDashboardStats();
+                    })
+                    .catch((error) => {
+                        console.error('Error deleting key:', error);
+                        alert('Error deleting key: ' + error.message);
+                    });
+            }
+        };
+
+        // Clean used keys
+        window.cleanUsedKeys = function() {
+            const appId = document.getElementById('appSelectKeyList').value;
+            if (!appId) {
+                alert('Please select an application');
+                return;
+            }
+            
+            if (!confirm('This will remove all used license keys for this application. Continue?')) return;
+            
+            onValue(ref(db, 'license_keys'), (snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    let usedCount = 0;
+                    
+                    Object.keys(data).forEach(key => {
+                        const keyData = data[key];
+                        if (keyData.used === true && keyData.appId === appId) {
+                            remove(ref(db, 'license_keys/' + key));
+                            usedCount++;
+                        }
+                    });
+                    
+                    if (usedCount > 0) {
+                        alert(`Removed ${usedCount} used license keys for app ${appId}`);
+                        loadKeys();
+                        updateDashboardStats();
+                    } else {
+                        alert('No used license keys found for this application');
+                    }
+                }
+            }, { onlyOnce: true });
+        };
+
+        // Load license keys
+        window.loadKeys = function() {
+            const appId = document.getElementById('appSelectKeyList').value;
+            if (!appId) {
+                document.getElementById('keyList').innerHTML = '<li>Please select an application</li>';
+                return;
+            }
+            
+            const list = document.getElementById('keyList');
+            const loadingDiv = document.getElementById('keyLoading');
+            
+            list.innerHTML = '';
+            loadingDiv.style.display = 'block';
+
+            onValue(ref(db, 'license_keys'), (snapshot) => {
+                list.innerHTML = '';
+                loadingDiv.style.display = 'none';
+                
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    let usedCount = 0, unusedCount = 0;
+                    
+                    Object.keys(data).forEach(key => {
+                        const keyData = data[key];
+                        if (keyData.appId !== appId) return;
+                        
+                        const isExpired = checkExpiration(keyData.expires);
+                        const daysLeft = getDaysUntilExpiry(keyData.expires);
+                        const isUsed = keyData.used === true;
+                        
+                        if (isUsed) usedCount++;
+                        else unusedCount++;
+                        
+                        const li = document.createElement('li');
+                        li.className = isUsed ? 'used-key' : 'unused-key';
+                        
+                        const escapedKey = encodeURIComponent(key);
+                        const keyCopyBtn = `<button class="copy-btn" onclick="copyToClipboard(decodeURIComponent('${escapedKey}'), 'License Key')" title="Copy Key">📋</button>`;
+                        
+                        li.innerHTML = `
+                            <div class="key-info">
+                                <strong>🔑 ${key}</strong> ${keyCopyBtn}
+                                <span class="key-type ${keyData.type}">${isUsed ? 'USED' : 'UNUSED'}</span>
+                                <br>
+                                ⏰ Expires: <span style="color: ${keyData.expires === 'lifetime' ? 'purple' : isExpired ? 'red' : 'green'}">${keyData.expires}</span> 
+                                ${daysLeft !== '∞' ? `(${daysLeft} days left)` : '(Lifetime)'}
+                                <br>
+                                📊 Status: <span style="color: ${isUsed ? 'blue' : 'green'}">${isUsed ? 'Used' : 'Available'}</span>
+                                ${keyData.usedBy ? `<br>👤 Used by: ${keyData.usedBy}` : ''}
+                                ${keyData.usedAt ? `<br>📅 Used: ${new Date(keyData.usedAt).toLocaleDateString()}` : ''}
+                                <br>📅 Created: ${new Date(keyData.createdAt).toLocaleDateString()}
+                            </div>
+                        `;
+                        list.appendChild(li);
+                    });
+                    
+                    if (usedCount === 0 && unusedCount === 0) {
+                        list.innerHTML = '<li>No license keys found for this application</li>';
+                    }
+                } else {
+                    list.innerHTML = '<li>No license keys found</li>';
+                }
+            }, (error) => {
+                console.error('Error loading keys:', error);
+                loadingDiv.style.display = 'none';
+                list.innerHTML = '<li style="color: red;">Error loading keys: ' + error.message + '</li>';
+                showMessage('Error loading keys: ' + error.message, 'error');
+            });
+        };
+
+        // Add user with license key verification
+        window.addUser = function() {
+            if (!validateAccess()) return;
+
+            const appId = document.getElementById('appSelectUsers').value;
+            if (!appId) {
+                alert('Please select an application');
+                return;
+            }
+            
+            const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value.trim();
+            const licenseKey = document.getElementById('licenseKey').value.trim();
+            const bind = document.getElementById('bindHWID').checked;
+
+            if (!user || !pass || !licenseKey) {
+                alert('Please enter Username, Password, and License Key');
+                return;
+            }
+
+            // Check if license key exists and is valid
+            onValue(ref(db, 'license_keys/' + licenseKey), (snapshot) => {
+                if (snapshot.exists()) {
+                    const keyData = snapshot.val();
+                    
+                    if (keyData.appId !== appId) {
+                        alert('This license key does not belong to the selected application!');
+                        return;
+                    }
+                    
+                    if (keyData.used === true) {
+                        alert('This license key has already been used!');
+                        return;
+                    }
+
+                    if (checkExpiration(keyData.expires)) {
+                        alert('This license key has expired!');
+                        return;
+                    }
+
+                    // Check if user already exists
+                    onValue(ref(db, `apps/${appId}/users/` + user), (userSnapshot) => {
+                        if (userSnapshot.exists()) {
+                            alert('Username already exists for this application!');
+                            return;
+                        }
+
+                        // Create user with license key data
+                        const userData = {
+                            password: pass,
+                            expires: keyData.expires,
+                            hwid: "",
+                            bindHWID: bind,
+                            status: "active",
+                            type: "premium",
+                            licenseKey: licenseKey,
+                            createdAt: new Date().toISOString()
+                        };
+
+                        // Add user and mark key as used
+                        const userPromise = set(ref(db, `apps/${appId}/users/` + user), userData);
+                        const keyPromise = update(ref(db, 'license_keys/' + licenseKey), {
+                            used: true,
+                            usedBy: user,
+                            usedAt: new Date().toISOString()
+                        });
+
+                        Promise.all([userPromise, keyPromise])
+                            .then(() => {
+                                alert('User added successfully with license key!');
+                                // Clear form
+                                document.getElementById('username').value = '';
+                                document.getElementById('password').value = '';
+                                document.getElementById('licenseKey').value = '';
+                                document.getElementById('bindHWID').checked = false;
+                                loadUsers();
+                                updateDashboardStats();
+                            })
+                            .catch((error) => {
+                                console.error('Error adding user:', error);
+                                alert('Error adding user: ' + error.message);
+                            });
+                    }, { onlyOnce: true });
+                } else {
+                    alert('Invalid license key!');
+                }
+            }, { onlyOnce: true });
+        };
+
+        // Delete user
+        window.deleteUser = function() {
+            if (!validateAccess()) return;
+
+            const appId = document.getElementById('appSelectDeleteUser').value;
+            if (!appId) {
+                alert('Please select an application');
+                return;
+            }
+            
+            const user = document.getElementById('deleteUsername').value.trim();
+            if (!user) {
+                alert('Please enter Username to Delete');
+                return;
+            }
+
+            if (confirm('Are you sure you want to delete user: ' + user + '?')) {
+                // Get user data first to free up the license key
+                onValue(ref(db, `apps/${appId}/users/` + user), (snapshot) => {
+                    if (snapshot.exists()) {
+                        const userData = snapshot.val();
+                        const licenseKey = userData.licenseKey;
+
+                        // Delete user and free up license key
+                        const deleteUserPromise = remove(ref(db, `apps/${appId}/users/` + user));
+                        let freeLicensePromise = Promise.resolve();
+
+                        if (licenseKey) {
+                            freeLicensePromise = update(ref(db, 'license_keys/' + licenseKey), {
+                                used: false,
+                                usedBy: null,
+                                usedAt: null
+                            });
+                        }
+
+                        Promise.all([deleteUserPromise, freeLicensePromise])
+                            .then(() => {
+                                alert('User deleted successfully!' + (licenseKey ? ' License key has been freed up.' : ''));
+                                document.getElementById('deleteUsername').value = '';
+                                loadUsers();
+                                updateDashboardStats();
+                            })
+                            .catch((error) => {
+                                console.error('Error deleting user:', error);
+                                alert('Error deleting user: ' + error.message);
+                            });
+                    } else {
+                        alert('User not found for this application!');
+                    }
+                }, { onlyOnce: true });
+            }
+        };
+
+        // Toggle password visibility
+        window.togglePasswordVisibility = function() {
+            passwordsVisible = !passwordsVisible;
+            const toggleBtn = document.getElementById('togglePasswords');
+            
+            if (passwordsVisible) {
+                toggleBtn.textContent = '🙈 Hide Passwords';
+                toggleBtn.classList.add('active');
+            } else {
+                toggleBtn.textContent = '👁️ Show Passwords';
+                toggleBtn.classList.remove('active');
+            }
+            
+            // Reload users to apply visibility changes
+            loadUsers();
+        };
+
+        // Toggle HWID visibility
+        window.toggleHWIDVisibility = function() {
+            hwidsVisible = !hwidsVisible;
+            const toggleBtn = document.getElementById('toggleHWIDs');
+            
+            if (hwidsVisible) {
+                toggleBtn.textContent = '🙈 Hide HWIDs';
+                toggleBtn.classList.add('active');
+            } else {
+                toggleBtn.textContent = '👁️ Show HWIDs';
+                toggleBtn.classList.remove('active');
+            }
+            
+            loadUsers();
+        };
+
+        // Toggle custom days field for key generation
+        window.toggleKeyCustomDays = function() {
+            const licenseType = document.getElementById('keyLicenseType').value;
+            const customContainer = document.getElementById('keyCustomDaysContainer');
+            
+            if (licenseType === 'custom') {
+                customContainer.style.display = 'block';
+            } else {
+                customContainer.style.display = 'none';
+            }
+        };
+
+        // Copy to clipboard function
+        window.copyToClipboard = function(text, label) {
+            navigator.clipboard.writeText(text).then(() => {
+                showMessage(`${label} copied to clipboard!`, 'success', 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                showMessage(`Failed to copy ${label}`, 'error', 3000);
+            });
+        };
+
+        // Load users
+        window.loadUsers = function() {
+            const appId = document.getElementById('appSelectUserList').value;
+            if (!appId) {
+                document.getElementById('userList').innerHTML = '<li>Please select an application</li>';
+                return;
+            }
+            
+            const list = document.getElementById('userList');
+            const loadingDiv = document.getElementById('loading');
+            
+            list.innerHTML = '';
+            loadingDiv.style.display = 'block';
+
+            onValue(ref(db, `apps/${appId}/users`), (snapshot) => {
+                list.innerHTML = '';
+                loadingDiv.style.display = 'none';
+                
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    
+                    Object.keys(data).forEach(username => {
+                        const userData = data[username];
+                        const isExpired = checkExpiration(userData.expires);
+                        const daysLeft = getDaysUntilExpiry(userData.expires);
+                        
+                        const li = document.createElement('li');
+                        li.className = isExpired ? 'expired-user' : 
+                                     userData.type === 'free_trial' ? 'trial-user' : 'active-user';
+                        
+                        const displayPassword = passwordsVisible ? userData.password : '********';
+                        const displayHWID = hwidsVisible ? (userData.hwid || 'Not Set') : '********';
+                        
+                        const escapedUsername = encodeURIComponent(username);
+                        const escapedPassword = encodeURIComponent(userData.password);
+                        const escapedHWID = encodeURIComponent(userData.hwid || '');
+                        const escapedLicenseKey = encodeURIComponent(userData.licenseKey || '');
+                        
+                        const usernameCopyBtn = `<button class="copy-btn" onclick="copyToClipboard(decodeURIComponent('${escapedUsername}'), 'Username')" title="Copy Username">📋</button>`;
+                        const passwordCopyBtn = passwordsVisible ? `<button class="copy-btn" onclick="copyToClipboard(decodeURIComponent('${escapedPassword}'), 'Password')" title="Copy Password">📋</button>` : '';
+                        const hwidCopyBtn = hwidsVisible && userData.hwid ? `<button class="copy-btn" onclick="copyToClipboard(decodeURIComponent('${escapedHWID}'), 'HWID')" title="Copy HWID">📋</button>` : '';
+                        const licenseCopyBtn = userData.licenseKey ? `<button class="copy-btn" onclick="copyToClipboard(decodeURIComponent('${escapedLicenseKey}'), 'License Key')" title="Copy License Key">📋</button>` : '';
+                        
+                        li.innerHTML = `
+                            <div class="user-info">
+                                <strong>👤 ${username}</strong> ${usernameCopyBtn}
+                                <span class="user-type ${userData.type}">${userData.type.toUpperCase()}</span>
+                                <br>
+                                🔐 Password: <span class="password-field">${displayPassword}</span> ${passwordCopyBtn}
+                                <br>
+                                💻 HWID: <span class="hwid-field">${displayHWID}</span> ${hwidCopyBtn}
+                                ${userData.bindHWID ? ' (🔒 Bound)' : ' (🔓 Unbound)'}
+                                <br>
+                                ⏰ Expires: <span style="color: ${userData.expires === 'lifetime' ? 'purple' : isExpired ? 'red' : 'green'}">${userData.expires}</span> 
+                                ${daysLeft !== '∞' ? `(${daysLeft} days left)` : '(Lifetime)'}
+                                ${userData.licenseKey ? `<br>🔑 License Key: <span class="key-field">${userData.licenseKey}</span> ${licenseCopyBtn}` : ''}
+                                <br>📅 Created: ${userData.createdAt ? new Date(userData.createdAt).toLocaleDateString() : 'Unknown'}
+                            </div>
+                        `;
+                        list.appendChild(li);
+                    });
+                } else {
+                    list.innerHTML = '<li>No users found for this application</li>';
+                }
+            }, (error) => {
+                console.error('Error loading users:', error);
+                loadingDiv.style.display = 'none';
+                list.innerHTML = '<li style="color: red;">Error loading users: ' + error.message + '</li>';
+                showMessage('Error loading users: ' + error.message, 'error');
+            });
+        };
+
+        // Test connection
+        window.testConnection = function() {
+            showMessage('Testing connection...', 'info', 2000);
+            
+            onValue(ref(db, '.info/connected'), (snapshot) => {
+                if (snapshot.val() === true) {
+                    showMessage('✅ Connection successful!', 'success', 3000);
+                } else {
+                    showMessage('❌ Connection failed!', 'error', 3000);
+                }
+            }, { onlyOnce: true });
+        };
+
+        // Show message function
+        function showMessage(message, type = 'info', duration = 5000) {
+            const messagesContainer = document.getElementById('upgradeMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `upgrade-message ${type}`;
+            messageDiv.innerHTML = `
+                <span>${message}</span>
+                <button class="close-btn" onclick="this.parentElement.remove()">✖</button>
+            `;
+            
+            messagesContainer.appendChild(messageDiv);
+            
+            // Auto remove after duration
+            setTimeout(() => {
+                if (messageDiv.parentElement) {
+                    messageDiv.remove();
+                }
+            }, duration);
+        }
+
+        // Update dashboard statistics
+        function updateDashboardStats() {
+            const statsContainer = document.getElementById('dashboardStats');
+            
+            // Get applications count
+            onValue(ref(db, 'applications'), (appsSnapshot) => {
+                let totalApps = 0;
+                if (appsSnapshot.exists()) {
+                    totalApps = Object.keys(appsSnapshot.val()).length;
+                }
+                
+                // Get users data
+                onValue(ref(db, 'apps'), (usersSnapshot) => {
+                    let activeUsers = 0, expiredUsers = 0, trialUsers = 0, lifetimeUsers = 0, totalUsers = 0;
+                    
+                    if (usersSnapshot.exists()) {
+                        const apps = usersSnapshot.val();
+                        Object.values(apps).forEach(appData => {
+                            if (appData.users) {
+                                totalUsers += Object.keys(appData.users).length;
+                                
+                                Object.values(appData.users).forEach(userData => {
+                                    if (userData.expires === 'lifetime') {
+                                        lifetimeUsers++;
+                                    } else if (checkExpiration(userData.expires)) {
+                                        expiredUsers++;
+                                    } else if (userData.type === 'free_trial') {
+                                        trialUsers++;
+                                    } else {
+                                        activeUsers++;
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    
+                    // Get keys data
+                    onValue(ref(db, 'license_keys'), (keysSnapshot) => {
+                        let totalKeys = 0, usedKeys = 0, unusedKeys = 0;
+                        
+                        if (keysSnapshot.exists()) {
+                            const keys = keysSnapshot.val();
+                            totalKeys = Object.keys(keys).length;
+                            
+                            Object.values(keys).forEach(keyData => {
+                                if (keyData.used === true) {
+                                    usedKeys++;
+                                } else {
+                                    unusedKeys++;
+                                }
+                            });
+                        }
+                        
+                        // Update dashboard
+                        statsContainer.innerHTML = `
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <span class="stat-label">Total Apps</span>
+                                    <span class="stat-value total">${totalApps}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Total Users</span>
+                                    <span class="stat-value total">${totalUsers}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Active Users</span>
+                                    <span class="stat-value active">${activeUsers}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Expired Users</span>
+                                    <span class="stat-value expired">${expiredUsers}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Trial Users</span>
+                                    <span class="stat-value trial">${trialUsers}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Lifetime Users</span>
+                                    <span class="stat-value lifetime">${lifetimeUsers}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Total Keys</span>
+                                    <span class="stat-value keys">${totalKeys}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Used Keys</span>
+                                    <span class="stat-value keys">${usedKeys}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Available Keys</span>
+                                    <span class="stat-value active">${unusedKeys}</span>
+                                </div>
+                            </div>
+                        `;
+                    }, { onlyOnce: true });
+                }, { onlyOnce: true });
+            }, { onlyOnce: true });
+        }
+
+        // Initialize application
+        function initializeLicenseManager() {
+            // Load initial data
+            loadApplications();
+            updateDashboardStats();
+            
+            // Set up periodic updates
+            setInterval(updateDashboardStats, 30000); // Update stats every 30 seconds
+            
+            showMessage('🎉 License Manager Pro initialized successfully!', 'success', 3000);
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initializeLicenseManager);
+
+        // Make functions globally available
+        window.showMessage = showMessage;
+        window.updateDashboardStats = updateDashboardStats;
+    </script>
+</body>
+</html>
